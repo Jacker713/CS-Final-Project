@@ -15,10 +15,11 @@ public class Movement : MonoBehaviour {
     public int maxJetPackUse = 1400;
     public int jetPackPower = 70;
     public bool doubleJump = false;
+    float jetPack;
 
-	// Use this for initialization
-	void Start () {
-	
+    // Use this for initialization
+    void Start () {
+         jetPack = maxJetPackUse;
 	}
 	
 	// Update is called once per frame
@@ -33,6 +34,11 @@ public class Movement : MonoBehaviour {
             doubleJump = false;
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
+        }
+
+        if(grounded && jetPack < maxJetPackUse)
+        {
+            jetPack += 0.1f;
         }
 
         if (!grounded && Input.GetKey(KeyCode.Space) && !doubleJump && maxJetPackUse > 0)
@@ -66,9 +72,9 @@ public class Movement : MonoBehaviour {
 
     void UseJetPack()
     {
-        if (Input.GetKey(KeyCode.Space) && maxJetPackUse > 0)
+        if (Input.GetKey(KeyCode.Space) && jetPack > 0)
         {
-            maxJetPackUse--;
+            jetPack--;
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jetPackPower));
         }
 
