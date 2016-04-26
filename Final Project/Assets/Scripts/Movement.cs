@@ -12,6 +12,9 @@ public class Movement : MonoBehaviour {
     public LayerMask whatIsGround;
     public float jumpforce = 700f;
 
+    public int maxJetPackUse = 2 * jumpforce;
+    public bool doubleJump = false;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -23,10 +26,24 @@ public class Movement : MonoBehaviour {
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
         }
+
+        if (!grounded && Input.GetKeyDown(KeyCode.Space) && doubleJump)
+        {
+            doubleJump = false;
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
+        }
+
+        if (!grounded && Input.GetKeyDown(KeyCode.Space) && !doubleJump && jetPackUse > 0)
+        {
+            jetPackUse--;
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce / 100));
+        }
     }
 
     void FixedUpdate(){
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
+
+        if (grounded) { doubleJump = true; }
 
 
         float move = Input.GetAxis("Horizontal");
