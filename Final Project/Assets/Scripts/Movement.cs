@@ -12,7 +12,8 @@ public class Movement : MonoBehaviour {
     public LayerMask whatIsGround;
     public float jumpforce = 700f;
 
-    public int maxJetPackUse = 2 * jumpforce;
+    public int maxJetPackUse = 1400;
+    public int jetPackPower = 70;
     public bool doubleJump = false;
 
 	// Use this for initialization
@@ -33,10 +34,9 @@ public class Movement : MonoBehaviour {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
         }
 
-        if (!grounded && Input.GetKeyDown(KeyCode.Space) && !doubleJump && jetPackUse > 0)
+        if (!grounded && Input.GetKey(KeyCode.Space) && !doubleJump && maxJetPackUse > 0)
         {
-            jetPackUse--;
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce / 100));
+            UseJetPack();
         }
     }
 
@@ -61,5 +61,15 @@ public class Movement : MonoBehaviour {
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    void UseJetPack()
+    {
+        if (Input.GetKey(KeyCode.Space) && maxJetPackUse > 0)
+        {
+            maxJetPackUse--;
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jetPackPower));
+        }
+
     }
 }
