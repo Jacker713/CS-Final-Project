@@ -31,6 +31,7 @@ public class Movement : MonoBehaviour {
         if (!grounded && Input.GetKeyDown(KeyCode.Space) && doubleJump)
         {
             doubleJump = false;
+            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
         }
 
