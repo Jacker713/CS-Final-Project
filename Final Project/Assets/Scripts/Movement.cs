@@ -8,13 +8,15 @@ public class Movement : MonoBehaviour {
 
     bool grounded = false;
     public Transform groundCheck;
-    float groundRadius = 0.2f;
+    float groundRadius = 0.5f;
     public LayerMask whatIsGround;
     public float jumpforce = 700f;
 
     public int maxJetPackUse = 1400;
     public int jetPackPower = 70;
     public bool doubleJump = false;
+    bool jumpedOnce = false;
+    bool allowDoubleJump = false;
     float jetPack;
 
     // Use this for initialization
@@ -24,14 +26,23 @@ public class Movement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (grounded && Input.GetKeyDown(KeyCode.Space))
+        
+        if (grounded && Input.GetAxis("Jump") != 0)
         {
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
+            jumpedOnce = true;
         }
 
-        if (!grounded && Input.GetKeyDown(KeyCode.Space) && doubleJump)
+        if(Input.GetAxis("Jump") == 0 && jumpedOnce)
+        {
+            allowDoubleJump = true;
+        }
+
+        if (!grounded && Input.GetAxis("Jump") != 0 && doubleJump && allowDoubleJump)
         {
             doubleJump = false;
+            allowDoubleJump = false;
+            jumpedOnce = false;
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpforce));
         }
@@ -41,7 +52,7 @@ public class Movement : MonoBehaviour {
             jetPack += 0.1f;
         }
 
-        if (!grounded && Input.GetKey(KeyCode.Space) && !doubleJump && maxJetPackUse > 0)
+        if (!grounded && Input.GetAxis("Jump") != 0 && !doubleJump && maxJetPackUse > 0)
         {
             UseJetPack();
         }
@@ -50,7 +61,17 @@ public class Movement : MonoBehaviour {
     void FixedUpdate(){
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
 
-        if (grounded) { doubleJump = true; }
+        if(GetComponent<Rigidbody2D>().velocity.y != 0)
+        {
+            grounded = false;
+        }
+
+        if (grounded)
+        {
+            allowDoubleJump = false;
+            jumpedOnce = false;
+            doubleJump = true;
+        }
 
 
         float move = Input.GetAxis("Horizontal");
